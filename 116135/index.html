@@ -1,0 +1,695 @@
+﻿<div style="color:blue" align=center>Java面试题集（116135）</div><br><div id="article_content" class="article_content">
+
+<p><span style="font-weight:bold"><span style="color:rgb(51,51,51); line-height:26px; text-align:center"><span style="font-family:'Microsoft YaHei'"><span style="font-size:18px">Java程序员面试题集（116-135）</span></span></span></span></p>
+<p><span style="font-weight:bold"><span style="color:rgb(51,51,51); line-height:26px; text-align:center"><span style="font-family:Microsoft YaHei"><span style="font-size:18px">摘要：这一部分讲解基于Java的Web开发相关面试题，<span style="color:rgb(51,51,51); line-height:26px; text-align:center"><strong>即便在Java走向没落的当下，</strong></span>基于Java的Web开发因为拥有非常成熟的解决方案，仍然被广泛应用。不管你的Web开发中是否使用框架，JSP和Servlet都是一个必备的基础，在面试的时候被问到的概率还是很高的。</span></span></span></span></p>
+<p style="text-align:center"><span style="font-size:12px"><br>
+</span></p>
+<p><strong><span style="font-family:Microsoft YaHei"><span style="font-size:14px">116、说出Servlet的生命周期，并说出Servlet和CGI的区别?</span></span></strong></p>
+<p><span style="font-family:'Microsoft YaHei'"><span style="font-size:14px">答：Web容器加载Servlet并将其实例化后，Servlet生命周期开始，容器运行其init()方法进行Servlet的初始化；请求到达时调用Servlet的service方法，service方法会调用与请求对应的doGet或doPost等方法；当服务器关闭会项目被卸载时服务器会将Servlet实例销毁，此时会调用Servlet的destroy方法。Servlet与CGI的区别在于Servlet处于服务器进程中，它通过多线程方式运行其service方法，一个实例可以服务于多个请求，并且其实例一般不会销毁，而CGI
+ 对每个请求都产生新的进程，服务完成后就销毁，所以效率上低于Servlet。</span></span></p>
+<p><span style="font-family:'Microsoft YaHei'"><span style="font-size:14px">【补充1】SUN公司在1996年发布Servlet技术就是为了和CGI进行竞争，Servlet是一个特殊的Java程序，一个基于Java的Web应用通常包含一个或多个Servlet类。&nbsp;&nbsp; Servlet不能够自行创建并执行，它是在Servlet容器中运行的，容器将用户的请求传递给Servlet程序，此外将Servlet的响应回传给用户。通常一个Servlet会关联一个或多个JSP页面。以前CGI经常因为性能开销上的问题被诟病，然而Fast
+ CGI早就已经解决了CGI效率上的问题，所以面试的时候大可不必诟病CGI，腾讯的网站就使用了CGI技术，相信你也没感觉它哪里不好。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">【补充2】Servlet接口定义了5个方法，其中前三个方法与Servlet生命周期相关：</span></span></p>
+<ol start="1" type="1">
+<li><span style="font-family:Microsoft YaHei"><span style="font-size:14px">void init(ServletConfig config) throws ServletException</span></span></li><li><span style="font-family:Microsoft YaHei"><span style="font-size:14px">void service(ServletRequest req, ServletResponse resp) throws ServletException, java.io.IOException</span></span></li><li><span style="font-family:Microsoft YaHei"><span style="font-size:14px">void destory()</span></span></li><li><span style="font-family:Microsoft YaHei"><span style="font-size:14px">java.lang.String getServletInfo()</span></span></li><li><span style="font-family:Microsoft YaHei"><span style="font-size:14px">ServletConfig getServletConfig()</span></span></li></ol>
+<div><span style="font-family:Microsoft YaHei"><span style="font-size:14px"><br>
+</span></span></div>
+<p>
+<p><strong><span style="font-family:Microsoft YaHei"><span style="font-size:14px">117、转发（forward）和重定向（redirect）的区别?</span></span></strong></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答：forward是容器中控制权的转向，是服务器请求资源，服务器直接访问目标地址的URL，把那个URL 的响应内容读取过来，然后把这些内容再发给浏览器，浏览器根本不知道服务器发送的内容是从哪儿来的，所以它的地址栏中还是原来的地址。redirect就是服务器端根据逻辑，发送一个状态码，告诉浏览器重新去请求那个地址，因此从浏览器的地址栏中可以看到跳转后的链接地址。前者更加高效，在前者可以满足需要时，尽量使用转发（通过RequestDispatcher对象的forward方法，RequestDispatcher对象可以通过ServletRequest对象的getRequestDispatcher方法获得），并且，这样也有助于隐藏实际的链接；在有些情况下，比如，需要跳转到一个其它服务器上的资源，则必须使用重定向（通过HttpServletResponse对象调用其sendRedirect方法）。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">&nbsp;</span></span></p>
+<p><strong><span style="font-family:Microsoft YaHei"><span style="font-size:14px">118、JSP有哪些内置对象？作用分别是什么？</span></span></strong></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答：JSP有9个内置对象：</span></span></p>
+<p>
+<ol>
+<li><span style="font-size:14px; font-family:'Microsoft YaHei'">request：封装客户端的请求，其中包含来自GET或POST请求的参数；</span></li><li><span style="font-size:14px; font-family:'Microsoft YaHei'">response：封装服务器对客户端的响应；</span></li><li><span style="font-size:14px; font-family:'Microsoft YaHei'">pageContext：通过该对象可以获取其他对象；</span></li><li><span style="font-size:14px; font-family:'Microsoft YaHei'">session：封装用户会话的对象；</span></li><li><span style="font-size:14px; font-family:'Microsoft YaHei'">application：封装服务器运行环境的对象；</span></li><li><span style="font-size:14px; font-family:'Microsoft YaHei'">out：输出服务器响应的输出流对象；</span></li><li><span style="font-size:14px; font-family:'Microsoft YaHei'">config：Web应用的配置对象；</span></li><li><span style="font-size:14px; font-family:'Microsoft YaHei'">page：JSP页面本身（相当于Java程序中的this）；</span></li><li><span style="font-size:14px; font-family:'Microsoft YaHei'">exception：封装页面抛出异常的对象。</span></li></ol>
+<p>
+<p><span style="font-family:'Microsoft YaHei'"><span style="font-size:14px">【补充】如果用Servlet来生成网页中的动态内容无疑是非常繁琐的工作，另一方面，所有的文本和HTML标签都是硬编码，即使做出微小的修改，都需要进行重新编译。JSP解决了Servlet的这些问题，它是Servlet很好的补充，可以专门用作呈现给用户的视图（View），而Servlet作为控制器（Controller）专门负责处理用户请求并转发或重定向到某个页面。基于Java的Web开发很多都同时使用了Servlet和JSP。JSP页面其实是一个Servlet，能够运行Servlet的服务器（Servlet容器）通常也是JSP容器，可以提供JSP页面的运行环境，<a target="_blank" target="_blank" href="http://tomcat.apache.org/">Tomcat</a>就是一个Servlet/JSP容器。第一次请求一个JSP页面时，Servlet/JSP容器首先将JSP页面转换成一个JSP页面的实现类，这是一个实现了JspPage接口或其子接口HttpJspPage的Java类。JspPage接口是Servlet的子接口，因此每个JSP页面都是一个Servlet。转换成功后，容器会编译Servlet类，之后容器加载和实例化Java字节码，并执行它通常对Servlet所做的生命周期操作。对同一个JSP页面的后续请求，容器会查看这个JSP页面是否被修改过，如果修改过就会重新转换并重新编译并执行。如果没有则执行内存中已经存在的Servlet实例。我们可以看一段JSP代码对应的Java程序就知道一切了，而且9个内置对象的神秘面纱也会被揭开。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">JSP页面：</span></span></p>
+<p>
+<pre code_snippet_id="133366" snippet_file_name="blog_20141013_1_5359046" name="code" class="html">&lt;%@ page pageEncoding=&quot;UTF-8&quot;%&gt;
+&lt;%
+String path = request.getContextPath();
+String basePath = request.getScheme()+&quot;://&quot;+request.getServerName()+&quot;:&quot;+request.getServerPort()+path+&quot;/&quot;;
+%&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;base href=&quot;&lt;%=basePath%&gt;&quot;&gt;
+    &lt;title&gt;首页&lt;/title&gt;
+    &lt;style type=&quot;text/css&quot;&gt;
+    	* { font-family: &quot;Arial&quot;; }
+    &lt;/style&gt;
+  &lt;/head&gt;
+  
+  &lt;body&gt;
+    &lt;h1&gt;Hello, World!&lt;/h1&gt;
+    &lt;hr/&gt;
+    &lt;h2&gt;Current time is: &lt;%= new java.util.Date().toString() %&gt;&lt;/h2&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+<p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">对应的Java代码：</span></span></p>
+<p>
+<pre code_snippet_id="133366" snippet_file_name="blog_20141013_2_2927239" name="code" class="java">/*
+ * Generated by the Jasper component of Apache Tomcat
+ * Version: Apache Tomcat/7.0.52
+ * Generated at: 2014-10-13 13:28:38 UTC
+ * Note: The last modified time of this file was set to
+ *       the last modified time of the source file after
+ *       generation to assist with modification tracking.
+ */
+package org.apache.jsp;
+
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.jsp.*;
+
+public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
+		implements org.apache.jasper.runtime.JspSourceDependent {
+
+	private static final javax.servlet.jsp.JspFactory _jspxFactory = javax.servlet.jsp.JspFactory
+			.getDefaultFactory();
+
+	private static java.util.Map&lt;java.lang.String, java.lang.Long&gt; _jspx_dependants;
+
+	private javax.el.ExpressionFactory _el_expressionfactory;
+	private org.apache.tomcat.InstanceManager _jsp_instancemanager;
+
+	public java.util.Map&lt;java.lang.String, java.lang.Long&gt; getDependants() {
+		return _jspx_dependants;
+	}
+
+	public void _jspInit() {
+		_el_expressionfactory = _jspxFactory.getJspApplicationContext(
+				getServletConfig().getServletContext()).getExpressionFactory();
+		_jsp_instancemanager = org.apache.jasper.runtime.InstanceManagerFactory
+				.getInstanceManager(getServletConfig());
+	}
+
+	public void _jspDestroy() {
+	}
+
+	public void _jspService(
+			final javax.servlet.http.HttpServletRequest request,
+			final javax.servlet.http.HttpServletResponse response)
+			throws java.io.IOException, javax.servlet.ServletException {
+// 9个内置对象就是在这里定义的
+		final javax.servlet.jsp.PageContext pageContext;
+		javax.servlet.http.HttpSession session = null;
+		final javax.servlet.ServletContext application;
+		final javax.servlet.ServletConfig config;
+		javax.servlet.jsp.JspWriter out = null;
+		final java.lang.Object page = this;
+		javax.servlet.jsp.JspWriter _jspx_out = null;
+		javax.servlet.jsp.PageContext _jspx_page_context = null;
+
+		try {
+			response.setContentType(&quot;text/html;charset=UTF-8&quot;);
+			pageContext = _jspxFactory.getPageContext(this, request, response,
+					null, true, 8192, true);
+			_jspx_page_context = pageContext;
+			application = pageContext.getServletContext();
+			config = pageContext.getServletConfig();
+			session = pageContext.getSession();
+			out = pageContext.getOut();
+			_jspx_out = out;
+
+			out.write(&#39;\r&#39;);
+			out.write(&#39;\n&#39;);
+
+			String path = request.getContextPath();
+			String basePath = request.getScheme() + &quot;://&quot;
+					+ request.getServerName() + &quot;:&quot; + request.getServerPort()
+					+ path + &quot;/&quot;;
+// 以下代码通过输出流将HTML标签输出到浏览器中
+			out.write(&quot;\r\n&quot;);
+			out.write(&quot;\r\n&quot;);
+			out.write(&quot;&lt;!DOCTYPE html&gt;\r\n&quot;);
+			out.write(&quot;&lt;html&gt;\r\n&quot;);
+			out.write(&quot;  &lt;head&gt;\r\n&quot;);
+			out.write(&quot;    &lt;base href=\&quot;&quot;);
+			out.print(basePath);
+			out.write(&quot;\&quot;&gt;\r\n&quot;);
+			out.write(&quot;    &lt;title&gt;首页&lt;/title&gt;\r\n&quot;);
+			out.write(&quot;    &lt;style type=\&quot;text/css\&quot;&gt;\r\n&quot;);
+			out.write(&quot;    \t* { font-family: \&quot;Arial\&quot;; }\r\n&quot;);
+			out.write(&quot;    &lt;/style&gt;\r\n&quot;);
+			out.write(&quot;  &lt;/head&gt;\r\n&quot;);
+			out.write(&quot;  \r\n&quot;);
+			out.write(&quot;  &lt;body&gt;\r\n&quot;);
+			out.write(&quot;    &lt;h1&gt;Hello, World!&lt;/h1&gt;\r\n&quot;);
+			out.write(&quot;    &lt;hr/&gt;\r\n&quot;);
+			out.write(&quot;    &lt;h2&gt;Current time is: &quot;);
+			out.print(new java.util.Date().toString());
+			out.write(&quot;&lt;/h2&gt;\r\n&quot;);
+			out.write(&quot;  &lt;/body&gt;\r\n&quot;);
+			out.write(&quot;&lt;/html&gt;\r\n&quot;);
+		} catch (java.lang.Throwable t) {
+			if (!(t instanceof javax.servlet.jsp.SkipPageException)) {
+				out = _jspx_out;
+				if (out != null &amp;&amp; out.getBufferSize() != 0)
+					try {
+						out.clearBuffer();
+					} catch (java.io.IOException e) {
+					}
+				if (_jspx_page_context != null)
+					_jspx_page_context.handlePageException(t);
+				else
+					throw new ServletException(t);
+			}
+		} finally {
+			_jspxFactory.releasePageContext(_jspx_page_context);
+		}
+	}
+}
+</pre>
+<p>
+<p><span style="font-family:'Microsoft YaHei'"><strong><br>
+</strong></span></p>
+<p><span style="font-family:'Microsoft YaHei'"><strong><span style="font-size:14px">119、get和post请求的区别？</span></strong></span></p>
+<p><span style="font-family:'Microsoft YaHei'"><span style="font-size:14px">答： </span>
+</span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">①get请求用来从服务器上获得资源，而post是用来向服务器提交数据；</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">②get将表单中数据按照name=value的形式，添加到action 所指向的URL 后面，并且两者使用“?”连接，而各个变量之间使用“&amp;”连接；post是将表单中的数据放在HTML头部（header），传递到action所指向URL；</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">③get传输的数据要受到URL长度限制（1024字节）；而post可以传输大量的数据，上传文件只能使用post方式；</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">④使用get时参数会显示在地址栏上，如果这些数据不是敏感数据，那么可以使用get；对于敏感数据还是应用使用post；</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">⑤get使用MIME类型application/x-www-form-urlencoded的URL 编码（URL encoding，也叫百分号编码）文本的&#26684;式传递参数，保证被传送的参数由遵循规范的文本组成，例如一个空&#26684;的编码是&quot;%20&quot;。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">&nbsp;</span></span></p>
+<p><strong><span style="font-family:Microsoft YaHei"><span style="font-size:14px">120、常用的Web容器</span></span></strong></p>
+<p><span style="background-color:rgb(255,255,255)"><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答：Unix和Linux平台下使用最广泛的免费HTTP服务器是Apache服务器，而Windows平台的服务器通常使用IIS作为Web服务器。选择Web服务器应考虑的因素有：性能、安全性、日志和统计、<a target="_blank" target="_blank" href="http://baike.baidu.com/view/7383.htm">虚拟主机</a>、<a target="_blank" target="_blank" href="http://baike.baidu.com/view/751.htm">代理服务器</a>、缓冲服务和集成应用程序等。下面是对常用服务器的简介：</span></span></span></p>
+<p>
+<ul>
+<li><span style="font-size:14px; font-family:'Microsoft YaHei'">IIS：Microsoft的Web服务器产品为Internet Information Services。IIS 是允许在公共Intranet或Internet上发布信息的Web服务器。IIS是目前最流行的Web服务器产品之一，很多著名的网站都是建立在IIS的平台上。IIS提供了一个图形界面的管理工具，称为Internet服务管理器，可用于监视配置和控制Internet服务。IIS是一种Web服务组件，其中包括Web服务器、</span><a target="_blank" target="_blank" href="http://baike.baidu.com/view/106754.htm" style="font-size:14px; font-family:'Microsoft YaHei'">FTP服务器</a><span style="font-size:14px; font-family:'Microsoft YaHei'">、NNTP服务器和SMTP服务器，分别用于网页浏览、文件传输、新闻服务和邮件发送等方面，它使得在网络（包括互联网和局域网）上发布信息成了一件很容易的事。它提供ISAPI(Intranet
+ Server API）作为扩展Web服务器功能的编程接口；同时，它还提供一个Internet数据库连接器，可以实现对数据库的查询和更新。</span></li><li><span style="font-size:14px; font-family:'Microsoft YaHei'">Kangle：Kangle&nbsp;Web服务器是一款跨平台、功能强大、安全稳定、易操作的高性能</span><a target="_blank" target="_blank" href="http://baike.baidu.com/view/460250.htm" style="font-size:14px; font-family:'Microsoft YaHei'">Web服务器</a><span style="font-size:14px; font-family:'Microsoft YaHei'">和反向代理服务器软件。此外，Kangle也是一款专为做虚拟主机研发的Web服务器。实现虚拟主机独立进程、独立身份运行。用户之间安全隔离，一个用户出问题不影响其他用户。支持PHP、ASP、ASP.NET、Java、Ruby等多种动态开发语言。</span></li><li><span style="font-size:14px; font-family:'Microsoft YaHei'">WebSphere：WebSphere Application Server是功能完善、开放的Web应用程序服务器，是IBM电子商务计划的核心部分，它是基于Java的应用环境，用于建立、部署和管理Internet和Intranet Web应用程序，适应各种Web应用程序服务器的需要，范围从简单到高级直到企业级。</span></li><li><span style="font-size:14px; font-family:'Microsoft YaHei'">WebLogic：BEA WebLogic Server是一种多功能、基于标准的Web应用服务器，为企业构建自己的应用提供了坚实的基础。各种应用开发、部署所有关键性的任务，无论是集成各种系统和数据库，还是提交服务、跨Internet协作，Weblogic都提供了相应的支持。由于它具有全面的功能、对开放标准的遵从性、多层架构、支持基于组件的开发，基于Internet的企业都选择它来开发、部署最佳的应用。BEA
+ WebLogic Server在使应用服务器成为企业应用架构的基础方面一直处于领先地位，为构建集成化的企业级应用提供了稳固的基础，它们以 Internet的容量和速度，在连网的企业之间共享信息、提交服务，实现协作自动化。</span></li><li><span style="font-size:14px; font-family:'Microsoft YaHei'">Apache：目前</span><a target="_blank" target="_blank" href="http://baike.baidu.com/view/28283.htm" style="font-size:14px; font-family:'Microsoft YaHei'">Apache</a><span style="font-size:14px; font-family:'Microsoft YaHei'">仍然是世界上用得最多的Web服务器，市场占有率约为60%左右。世界上很多著名的网站都是Apache的产物，它的成功之处主要在于它的源代码开放、有一支强大的开发团队、支持跨平台的应用（可以运行在几乎所有的</span><a target="_blank" target="_blank" href="http://baike.baidu.com/view/8095.htm" style="font-size:14px; font-family:'Microsoft YaHei'">Unix</a><span style="font-size:14px; font-family:'Microsoft YaHei'">、Windows、</span><a target="_blank" target="_blank" href="http://baike.baidu.com/view/1634.htm" style="font-size:14px; font-family:'Microsoft YaHei'">Linux</a><span style="font-size:14px; font-family:'Microsoft YaHei'">系统平台上）以及它的可移植性等方面。</span></li><li><span style="font-size:14px; font-family:'Microsoft YaHei'">Tomcat：Tomcat是一个开放源代码、运行Servlet和JSP的容器。TomcatServer实现了Servlet和JSP规范。此外，Tomcat还实现了Apache-Jakarta规范而且比绝大多数商业应用软件服务器要好，因此目前也有不少的Web服务器都选择了Tomcat。</span></li><li><span style="font-size:14px; font-family:'Microsoft YaHei'">Nginx：</span><span style="font-size:14px; font-family:'Microsoft YaHei'">读作&quot;engine x&quot;，是一个高性能的HTTP和</span><span style="font-size:14px; font-family:'Microsoft YaHei'; color:windowtext">反向代理</span><span style="font-size:14px; font-family:'Microsoft YaHei'">服务器，也是一个IMAP/POP3/SMTP</span><a target="_blank" target="_blank" href="http://baike.baidu.com/view/751.htm" style="font-size:14px; font-family:'Microsoft YaHei'"><span style="color:windowtext">代理服务器</span></a><span style="font-size:14px; font-family:'Microsoft YaHei'">。
+ Nginx是由Igor Sysoev为</span><a target="_blank" target="_blank" href="http://baike.baidu.com/view/2403.htm" style="font-size:14px; font-family:'Microsoft YaHei'"><span style="color:windowtext">俄罗斯</span></a><span style="font-size:14px; font-family:'Microsoft YaHei'">访问量第二的
+ Rambler.ru站点开发的，第一个公开版本0.1.0发布于2004年10月4日。其将</span><span style="font-size:14px; font-family:'Microsoft YaHei'; color:windowtext">源代码</span><span style="font-size:14px; font-family:'Microsoft YaHei'">以类BSD许可证的形式发布，因它的稳定性、丰富的功能集、示例配置文件和低</span><a target="_blank" target="_blank" href="http://baike.baidu.com/view/53557.htm" style="font-size:14px; font-family:'Microsoft YaHei'"><span style="color:windowtext">系统资源</span></a><span style="font-size:14px; font-family:'Microsoft YaHei'">的消耗而闻名。</span></li></ul>
+<p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">&nbsp;</span></span></p>
+<p><strong><span style="font-family:Microsoft YaHei"><span style="font-size:14px">121、JSP 和Servlet 有有什么关系？</span></span></strong></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答：其实这个问题在上面已经阐述过了，Servlet是一个特殊的Java程序，它运行于服务器的JVM中，能够依靠服务器的支持向浏览器提供显示内容。JSP本质上是Servlet的一种简易形式， JSP会被服务器处理成一个类&#20284;于Servlet的Java程序，可以简化页面内容的生成。Servlet和JSP最主要的不同点在于，Servlet 的应用逻辑是在Java 文件中，并且完全从表示层中的HTML分离开来。而JSP的情况是Java和HTML可以组合成一个扩展名为.jsp
+ 的文件（有人说，Servlet就是在Java中写HTML，而JSP就是在HTML中写Java代码，当然，这个说法还是很片面的）。JSP侧重于视图，Servlet更侧重于控制逻辑，在MVC架构模式中，JSP适合充当视图（view）而Servlet适合充当控制器（controller）。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">&nbsp;</span></span></p>
+<p><strong><span style="font-family:Microsoft YaHei"><span style="font-size:14px">122、JSP中的四种作用域？</span></span></strong></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答：page、request、session和application，具体如下：</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">①page 代表与一个页面相关的对象和属性。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">②request 代表与Web客户机发出的一个请求相关的对象和属性。一个请求可能跨越多个页面，涉及多个Web 组件；需要在页面显示的临时数据可以置于此作用域</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">③session代表与某个用户与服务器建立的一次会话相关的对象和属性。跟某个用户相关的数据应该放在用户自己的session中</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">④application代表与整个Web应用程序相关的对象和属性，它实质上是跨越整个Web应用程序，包括多个页面、请求和会话的一个全局作用域。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">&nbsp;</span></span></p>
+<p><strong><span style="font-family:Microsoft YaHei"><span style="font-size:14px">123、如何实现JSP或Servlet的单线程模式？</span></span></strong></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答：</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px"></span></span></p>
+<pre code_snippet_id="133366" snippet_file_name="blog_20141014_3_9838037" name="code" class="html">&lt;%@page isThreadSafe=”false”%&gt;</pre><br>
+<span style="font-size:14px; font-family:'Microsoft YaHei'">【补充】Servlet默认的工作模式是单实例多线程，如果Servlet实现了标识接口SingleThreadModel又或是JSP页面通过page指令设置isThreadSafe属性为false，那么它们生成的Java代码会以单线程多实例方式工作。显然，这样做会导致每个请求创建一个Servlet实例，这种实践将导致严重的性能问题。</span>
+<p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">&nbsp;</span></span></p>
+<p><strong><span style="font-family:Microsoft YaHei"><span style="font-size:14px">124、实现会话跟踪的技术有哪些？</span></span></strong></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答：由于HTTP协议本身是无状态的，服务器为了区分不同的用户，就需要对用户会话进行跟踪，简单的说就是为用户进行登记，为用户分配唯一的ID，下一次用户在请求中包含此ID，服务器据此判断到底是哪一个用户。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">①URL 重写：在URL中添加用户会话的信息作为请求的参数，或者将唯一的会话ID添加到URL结尾以标识一个会话。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">②设置表单隐藏域：将和会话跟踪相关的字段添加到隐式表单域中，这些信息不会在浏览器中显示但是提交表单时会提交给服务器。<br>
+</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">这两种方式很难处理跨越多个页面的信息传递，因为如果每次都要修改URL或在页面中添加隐式表单域来存储用户会话相关信息，事情将变得非常麻烦。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">③cookie：cookie有两种，一种是基于窗口的，浏览器窗口关闭后，cookie就没有了；另一种是将信息存储在一个临时文件中，并设置存在的时间。当用户通过浏览器和服务器建立一次会话后，会话ID就会随响应信息返回存储在基于窗口的cookie中，那就意味着只要浏览器没有关闭，会话没有超时，下一次请求时这个会话ID又会提交给服务器让服务器识别用户身份。会话中可以为用户保存信息。会话对象是在服务器内存中的，而基于窗口的cookie是在客户端内存中的。如果浏览器禁用了cookie，那么就需要通过下面两种方式进行会话跟踪。当然，在使用cookie时要注意几点：首先不要在cookie中存放敏感信息；其次cookie存储的数据量有限（4k），不能将过多的内容存储cookie中；再者浏览器通常只允许一个站点最多存放20个cookie。当然，和用户会话相关的其他信息（除了会话ID）也可以存在cookie方便进行会话跟踪。<br>
+</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">④HttpSession：在所有会话跟踪技术中，HttpSession对象是最强大也是功能最多的。当一个用户第一次访问某个网站时会自动创建HttpSession，每个用户可以访问他自己的HttpSession。可以通过HttpServletRequest对象的getSession方法获得HttpSession，通过HttpSession的setAttribute方法可以将一个&#20540;放在HttpSession中，通过调用HttpSession对象的getAttribute方法，同时传入属性名就可以获取保存在HttpSession中的对象。与上面三种方式不同的是，HttpSession放在服务器的内存中，因此不要将过大的对象放在里面，即使目前的Servlet容器可以在内存将满时将HttpSession中的对象移到其他存储设备中，但是这样势必影响性能。添加到HttpSession中的&#20540;可以是任意Java对象，这个对象最好实现了Serializable接口，这样Servlet容器在必要的时候可以将其序列化到文件中，否则在序列化时就会出现异常。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">&nbsp;</span></span></p>
+<p><strong><span style="font-family:Microsoft YaHei"><span style="font-size:14px">126、过滤器有哪些作用和用法？</span></span></strong></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答： Java Web开发中的过滤器（filter）是从Servlet 2.3规范开始增加的功能，并在Servlet 2.4规范中得到增强。对Web应用来说，过滤器是一个驻留在服务器端的Web组件，它可以截取客户端和服务器之间的请求与响应信息，并对这些信息进行过滤。当Web容器接受到一个对资源的请求时，它将判断是否有过滤器与这个资源相关联。如果有，那么容器将把请求交给过滤器进行处理。在过滤器中，你可以改变请求的内容，或者重新设置请求的报头信息，然后再将请求发送给目标资源。当目标资源对请求作出响应时候，容器同样会将响应先转发给过滤器，再过滤器中，你可以对响应的内容进行转换，然后再将响应发送到客户端。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">常见的过滤器用途主要包括：对用户请求进行统一认证、对用户的访问请求进行记录和审核、对用户发送的数据进行过滤或替换、转换图象&#26684;式、对响应内容进行压缩以减少传输量、对请求或响应进行加解密处理、触发资源访问事件、对XML的输出应用XSLT等。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">和过滤器相关的接口主要有：Filter、FilterConfig、FilterChain</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">编码过滤器的例子：</span></span></p>
+<p>
+<pre code_snippet_id="133366" snippet_file_name="blog_20141014_4_5137955" name="code" class="java">package com.lovo.filter;
+
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebInitParam;
+
+@WebFilter(urlPatterns = { &quot;*&quot; }, 
+		initParams = {@WebInitParam(name=&quot;encoding&quot;, value=&quot;utf-8&quot;)})
+public class CodingFilter implements Filter {
+	private String defaultEncoding = &quot;utf-8&quot;;
+
+	@Override
+	public void destroy() {
+	}
+
+	@Override
+	public void doFilter(ServletRequest req, ServletResponse resp,
+			FilterChain chain) throws IOException, ServletException {
+		req.setCharacterEncoding(defaultEncoding);
+		resp.setCharacterEncoding(defaultEncoding);
+		chain.doFilter(req, resp);
+	}
+
+	@Override
+	public void init(FilterConfig config) throws ServletException {
+		String encoding = config.getInitParameter(&quot;encoding&quot;);
+		if (encoding != null) {
+			defaultEncoding = encoding;
+		}
+	}
+}</pre><br>
+<p><span style="font-size:14px; font-family:'Microsoft YaHei'">下载计数过滤器：</span></p>
+<p><span style="font-family:'Microsoft YaHei'"><span style="font-size:14px"></span></span><pre name="code" class="java">package com.accp.filter;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+
+@WebFilter(urlPatterns = {&quot;/*&quot;})
+public class DownloadCounterFilter implements Filter {
+	
+	private ExecutorService executorService = Executors.newSingleThreadExecutor();
+	private Properties downloadLog;
+	private File logFile;
+
+	@Override
+	public void destroy() {
+		executorService.shutdown();
+	}
+
+	@Override
+	public void doFilter(ServletRequest req, ServletResponse resp,
+			FilterChain chain) throws IOException, ServletException {
+		HttpServletRequest request = (HttpServletRequest) req;
+		final String uri = request.getRequestURI();
+		executorService.execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				String value = downloadLog.getProperty(uri);
+				if(value == null) {
+					downloadLog.setProperty(uri, &quot;1&quot;);
+				}
+				else {
+					int count = Integer.parseInt(value);
+					downloadLog.setProperty(uri, String.valueOf(++count));
+				}
+				try {
+					downloadLog.store(new FileWriter(logFile), &quot;&quot;);
+				} 
+				catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		chain.doFilter(req, resp);
+	}
+
+	@Override
+	public void init(FilterConfig config) throws ServletException {
+		String appPath = config.getServletContext().getRealPath(&quot;/&quot;);
+		logFile = new File(appPath, &quot;downloadLog.txt&quot;);
+		if(!logFile.exists()) {
+			try {
+				logFile.createNewFile();
+			} 
+			catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+		downloadLog = new Properties();
+		try {
+			downloadLog.load(new FileReader(logFile));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+}
+</pre><br>
+<br>
+</p>
+<p><strong><span style="font-family:Microsoft YaHei"><span style="font-size:14px">127、监听器有哪些作用和用法？</span></span></strong></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答：Java Web开发中的监听器（listener）就是application、session、request三个对象创建、销毁或者往其中添加修改删除属性时自动执行代码的功能组件，如下所示：</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">①ServletContextListener：对Servlet上下文的创建和销毁进行监听。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">②ServletContextAttributeListener：监听Servlet上下文属性的添加、删除和替换。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">③HttpSessionListener：对Session的创建和销毁进行监听。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">补充：session的销毁有两种情况：1session超时（可以在web.xml中通过&lt;session-config&gt;/&lt;session-timeout&gt;标签配置超时时间）；2通过调用session对象的invalidate()方法使session失效。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">④HttpSessionAttributeListener：对Session对象中属性的添加、删除和替换进行监听。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">⑤ServletRequestListener：对请求对象的初始化和销毁进行监听。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">⑥ServletRequestAttributeListener：对请求对象属性的添加、删除和替换进行监听。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">下面是一个统计网站最多在线人数及时间的监听器：</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">上下文监听器，在上下文中放置onLineCount和maxOnLineCount属性，初始&#20540;为0</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px"></span></span></p>
+<pre code_snippet_id="133366" snippet_file_name="blog_20141014_5_8867708" name="code" class="java">package com.lovo.listeners;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
+
+@WebListener
+public class InitListener implements ServletContextListener {
+
+	@Override
+	public void contextDestroyed(ServletContextEvent evt) {
+	}
+
+	@Override
+	public void contextInitialized(ServletContextEvent evt) {
+		evt.getServletContext().setAttribute(&quot;onLineCount&quot;, 0);
+		evt.getServletContext().setAttribute(&quot;maxOnLineCount&quot;, 0);
+	}
+	
+}</pre>
+<p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">会话监听器，监听到会话创建时判断是否达到最大在线人数并记录时间</span></span></p>
+<p>
+<pre code_snippet_id="133366" snippet_file_name="blog_20141013_4_5808452" name="code" class="java">package com.lovo.listeners;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.servlet.ServletContext;
+import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
+
+@WebListener
+public class MaxCountListener implements HttpSessionListener {
+
+	@Override
+	public void sessionCreated(HttpSessionEvent event) {
+		ServletContext ctx = event.getSession().getServletContext();
+		int count = Integer.parseInt(ctx.getAttribute(&quot;onLineCount&quot;).toString());
+		count++;
+		ctx.setAttribute(&quot;onLineCount&quot;, count);
+		int maxOnLineCount = Integer.parseInt(ctx.getAttribute(&quot;maxOnLineCount&quot;).toString());
+		if (count &gt; maxOnLineCount) {
+			ctx.setAttribute(&quot;maxOnLineCount&quot;, count);
+			DateFormat df = new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss&quot;);
+			ctx.setAttribute(&quot;date&quot;, df.format(new Date()));
+		}
+	}
+
+	@Override
+	public void sessionDestroyed(HttpSessionEvent event) {
+		ServletContext app = event.getSession().getServletContext();
+		int count = Integer.parseInt(app.getAttribute(&quot;onLineCount&quot;).toString());
+		count--;
+		app.setAttribute(&quot;onLineCount&quot;, count);
+	}
+}</pre>
+<p>
+<p><span style="font-size:14px">【注意】这里使用注解@WebListener配置该监听器，当然你可以在web.xml文件中用&lt;listener&gt;标签配置监听器，如下题所示。</span></p>
+<span style="font-family:Microsoft YaHei"><span style="font-size:14px"><br>
+<span style="font-weight:bold">128、web.xml 的作用？</span></span></span>
+<p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答：用于配置Web应用的相关信息，如：监听器（listener）、过滤器（filter）、 Servlet、相关参数、会话超时时间、安全验证方式、错误页面等。例如：</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">①配置Spring上下文加载监听器加载Spring配置文件：</span></span></p>
+<p align="left">
+<pre code_snippet_id="133366" snippet_file_name="blog_20131229_3_1826866" name="code" class="html">  &lt;context-param&gt;
+     &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+    &lt;param-value&gt;classpath:applicationContext.xml&lt;/param-value&gt;
+  &lt;/context-param&gt;
+ 
+  &lt;listener&gt;
+     &lt;listener-class&gt;
+       org.springframework.web.context.ContextLoaderListener
+     &lt;/listener-class&gt;
+  &lt;/listener&gt;</pre><span style="font-family:Microsoft YaHei"><br>
+<span style="font-size:14px">②配置Spring的OpenSessionInView过滤器来解决延迟加载和Hibernate会话关闭的矛盾：</span></span>
+<p>
+<p align="left">
+<pre code_snippet_id="133366" snippet_file_name="blog_20131229_4_3397029" name="code" class="html">&lt;filter&gt;
+  &lt;filter-name&gt;openSessionInView&lt;/filter-name&gt;
+  &lt;filter-class&gt;
+     org.springframework.orm.hibernate3.support.OpenSessionInViewFilter
+  &lt;/filter-class&gt;
+&lt;/filter&gt;
+ 
+&lt;filter-mapping&gt;
+  &lt;filter-name&gt;openSessionInView&lt;/filter-name&gt;
+  &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;</pre><span style="font-family:Microsoft YaHei"><br>
+<span style="font-size:14px">③配置会话超时时间为10分钟：</span></span>
+<p>
+<p align="left">
+<pre code_snippet_id="133366" snippet_file_name="blog_20131229_5_8555242" name="code" class="html">&lt;session-config&gt;
+  &lt;session-timeout&gt;10&lt;/session-timeout&gt;
+&lt;/session-config&gt;</pre><span style="font-family:Microsoft YaHei"><br>
+<span style="font-size:14px">④配置404和Exception的错误页面：</span></span>
+<p>
+<p align="left">
+<pre code_snippet_id="133366" snippet_file_name="blog_20131229_6_8381301" name="code" class="html">&lt;error-page&gt;
+  &lt;error-code&gt;404&lt;/error-code&gt;
+  &lt;location&gt;/error.jsp&lt;/location&gt;
+&lt;/error-page&gt;
+ 
+&lt;error-page&gt;
+  &lt;exception-type&gt;java.lang.Exception&lt;/exception-type&gt;
+  &lt;location&gt;/error.jsp&lt;/location&gt;
+&lt;/error-page&gt;</pre><span style="font-family:Microsoft YaHei"><br>
+<span style="font-size:14px">⑤配置安全认证方式：</span></span>
+<p>
+<p align="left">
+<pre code_snippet_id="133366" snippet_file_name="blog_20131229_7_1554649" name="code" class="html">&lt;security-constraint&gt;
+  &lt;web-resource-collection&gt;
+    &lt;web-resource-name&gt;ProtectedArea&lt;/web-resource-name&gt;
+    &lt;url-pattern&gt;/admin/*&lt;/url-pattern&gt;
+    &lt;http-method&gt;GET&lt;/http-method&gt;
+    &lt;http-method&gt;POST&lt;/http-method&gt;
+  &lt;/web-resource-collection&gt;
+  &lt;auth-constraint&gt;
+    &lt;role-name&gt;admin&lt;/role-name&gt;
+  &lt;/auth-constraint&gt;
+&lt;/security-constraint&gt;
+ 
+&lt;login-config&gt;
+  &lt;auth-method&gt;BASIC&lt;/auth-method&gt;
+&lt;/login-config&gt;
+ 
+&lt;security-role&gt;
+  &lt;role-name&gt;admin&lt;/role-name&gt;
+&lt;/security-role&gt;</pre>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">【补充1】从Servlet 3开始，可以不用在web.xml中部署Servlet（小服务）、Filter（过滤器）、Listener（监听器）等Web组件，Servlet 3提供了基于注解的部署方式，可以分别使用@WebServlet、@WebFilter、@WebListener三个部署小服务、过滤器、监听器。</span></span></p>
+<span style="font-family:Microsoft YaHei"><span style="font-size:14px">【补充2】如果Web提供了有价&#20540;的商业信息或者是敏感数据，那么站点的安全性就是必须考虑的问题。安全认证是实现安全性的重要手段，认证就是要解决“Are you who you say you are?”的问题。认证的方式非常多，简单说来可以分为三类：</span></span>
+<p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">A.What you know?&nbsp; --- 口令</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">B.What you have? --- 数字证书（<a target="_blank" target="_blank" href="http://baike.baidu.com/view/63573.htm?fr=aladdin">U盾</a>、<a target="_blank" target="_blank" href="http://baike.baidu.com/view/753281.htm?from_id=4116756&amp;type=syn&amp;fromtitle=%E5%AF%86%E4%BF%9D%E5%8D%A1&amp;fr=aladdin">密保卡</a>）</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">C.Who you are? ---&nbsp; 指纹识别、<a target="_blank" target="_blank" href="http://baike.baidu.com/view/1515414.htm?from_id=2251802&amp;type=syn&amp;fromtitle=%E8%99%B9%E8%86%9C%E8%AF%86%E5%88%AB&amp;fr=aladdin">虹膜识别</a></span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">在Tomcat中可以通过建立安全套接字层（Secure Socket Layer, SSL）以及通过基本验证或表单验证来实现对安全性的支持。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">&nbsp;</span></span></p>
+<p><strong><span style="font-family:Microsoft YaHei"><span style="font-size:14px">129、你的项目中使用过哪些JSTL标签？</span></span></strong></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答：项目中主要使用了JSTL的核心标签库，包括&lt;c:if&gt;、&lt;c:choose&gt;、&lt;c: when&gt;、&lt;c: otherwise&gt;、&lt;c:forEach&gt;等，主要用于构造循环和分支结构以控制显示逻辑。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">【说明】虽然JSTL标签库提供了core、sql、fmt、xml等标签库，但是实际开发中建议只使用核心标签库（core），而且最好只使用分支和循环标签并辅以表达式语言（EL），这样才能真正做到数据显示和业务逻辑的分离，这才是最佳实践。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">&nbsp;</span></span></p>
+<p><strong><span style="font-family:Microsoft YaHei"><span style="font-size:14px">130、使用标签库有什么好处？如何自定义JSP标签？</span></span></strong></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答：使用标签库的好处包括以下几个方面：</span></span></p>
+<p>
+<ol>
+<li><span style="font-family:Microsoft YaHei"><span style="font-size:14px">分离JSP页面的内容和逻辑，简化了Web开发；</span></span></li><li><span style="font-family:Microsoft YaHei"><span style="font-size:14px">开发者可以创建自定义标签来封装业务逻辑和显示逻辑；</span></span></li><li><span style="font-family:Microsoft YaHei"><span style="font-size:14px">标签具有很好的可移植性、可维护性和可重用性；</span></span></li><li><span style="font-family:Microsoft YaHei"><span style="font-size:14px">避免了对Scriptlet（小脚本）的使用（很多公司的项目开发都不允许在JSP中书写小脚本）</span></span></li></ol>
+<p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">自定义JSP标签包括以下几个步骤：</span></span></p>
+<p>
+<ol>
+<li><span style="font-family:Microsoft YaHei"><span style="font-size:14px">编写一个Java类实现实现Tag/BodyTag/IterationTag接口(通常不直接实现这些接口而是继承TagSupport/BodyTagSupport/SimpleTagSupport类，这是对适配器模式中缺省适配模式的应用)</span></span></li><li><span style="font-family:Microsoft YaHei"><span style="font-size:14px">重写doStartTag()、doEndTag()等方法，定义标签要完成的功能</span></span></li><li><span style="font-family:Microsoft YaHei"><span style="font-size:14px">编写扩展名为tld的标签描述文件对自定义标签进行部署，tld文件通常放在WEB-INF文件夹或其子目录</span></span></li><li><span style="font-family:Microsoft YaHei"><span style="font-size:14px">在JSP页面中使用taglib指令引用该标签库</span></span></li></ol>
+<p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">下面是一个例子：</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">标签类源代码</span></span></p>
+<p><span style="font-family:Microsoft YaHei"></span></p>
+<pre code_snippet_id="133366" snippet_file_name="blog_20141013_10_2597999" name="code" class="java">package com.lovo.tags;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.TagSupport;
+
+public class TimeTag extends TagSupport {
+	private static final long serialVersionUID = 1L;
+	
+	private String format = &quot;yyyy-MM-dd hh:mm:ss&quot;;
+	private String foreColor = &quot;black&quot;;
+	private String backColor = &quot;white&quot;;
+
+	public int doStartTag() throws JspException {
+	     SimpleDateFormat sdf = new SimpleDateFormat(format);
+	     JspWriter writer = pageContext.getOut();
+	     StringBuilder sb = new StringBuilder();
+	     sb.append(String.format(&quot;&lt;span style=&#39;color:%s;background-color:%s&#39;&gt;%s&lt;/span&gt;&quot;,
+	         foreColor, backColor, sdf.format(new Date())));
+	     try {
+	       writer.print(sb.toString());
+	     } catch(IOException e) {
+	       e.printStackTrace();
+	     }
+	     return SKIP_BODY;
+	  }
+
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
+	public void setForeColor(String foreColor) {
+		this.foreColor = foreColor;
+	}
+
+	public void setBackColor(String backColor) {
+		this.backColor = backColor;
+	}
+}
+</pre><br>
+<span style="font-size:14px"><span style="font-family:'Microsoft YaHei'">标签库描述文件（该文件通常放在WEB-INF目录或其子目录下</span><span style="font-family:'Microsoft YaHei'">）</span></span>
+<p>
+<p><span style="font-family:Microsoft YaHei"></span></p>
+<pre code_snippet_id="133366" snippet_file_name="blog_20141013_11_1174468" name="code" class="html">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;taglib xmlns=&quot;http://java.sun.com/xml/ns/j2ee&quot;
+	xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+	xsi:schemaLocation=&quot;http://java.sun.com/xml/ns/j2ee 
+	http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd&quot;
+	version=&quot;2.0&quot;&gt;
+	
+	&lt;description&gt;定义标签库&lt;/description&gt;
+	&lt;tlib-version&gt;1.0&lt;/tlib-version&gt;
+	&lt;short-name&gt;MyTag&lt;/short-name&gt;
+	&lt;tag&gt;
+		&lt;name&gt;time&lt;/name&gt;
+		&lt;tag-class&gt;com.lovo.tags.TimeTag&lt;/tag-class&gt;
+		&lt;body-content&gt;empty&lt;/body-content&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;format&lt;/name&gt;
+			&lt;required&gt;false&lt;/required&gt;
+		&lt;/attribute&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;foreColor&lt;/name&gt;
+		&lt;/attribute&gt;
+		&lt;attribute&gt;
+			&lt;name&gt;backColor&lt;/name&gt;
+		&lt;/attribute&gt;
+	&lt;/tag&gt;
+&lt;/taglib&gt;
+</pre><br>
+<span style="font-family:'Microsoft YaHei'"><span style="font-size:14px">JSP页面</span></span>
+<p>
+<p><span style="font-family:Microsoft YaHei"></span></p>
+<pre code_snippet_id="133366" snippet_file_name="blog_20141013_12_9750935" name="code" class="html">&lt;%@ page pageEncoding=&quot;UTF-8&quot;%&gt;
+&lt;%@ taglib prefix=&quot;my&quot; uri=&quot;/WEB-INF/tld/my.tld&quot; %&gt;
+&lt;%
+String path = request.getContextPath();
+String basePath = request.getScheme()+&quot;://&quot;+request.getServerName()+&quot;:&quot;+request.getServerPort()+path+&quot;/&quot;;
+%&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;base href=&quot;&lt;%=basePath%&gt;&quot;&gt;
+    &lt;title&gt;首页&lt;/title&gt;
+    &lt;style type=&quot;text/css&quot;&gt;
+    	* { font-family: &quot;Arial&quot;; font-size:72px; }
+    &lt;/style&gt;
+  &lt;/head&gt;
+  
+  &lt;body&gt;
+    &lt;my:time format=&quot;yyyy-MM-dd&quot; backColor=&quot;blue&quot; foreColor=&quot;yellow&quot;/&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+<p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">运行结果</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><img src="17517087164133" alt=""><br>
+</span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">【注意】如果要将自定义的标签库发布成JAR文件，需要将标签库描述文件（tld文件）放在JAR文件的META-INF目录下，可以JDK自带的jar工具完成JAR文件的生成，如果不清楚如何操作，可以请教<a target="_blank" target="_blank" href="http://91.213.30.151/">谷老师</a>（各位亲，点击这里真的可以使用用谷歌）和<a target="_blank" target="_blank" href="http://www.baidu.com">百老师</a>。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px"><br>
+</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px"><strong>131、表达式语言（EL）的隐式对象及其作用？</strong></span></span></p>
+<p><span style="font-family:Microsoft YaHei; font-size:14px">答：pageContext、initParam（访问上下文参数）、param（访问请求参数）、paramValues、header（访问请求头）、headerValues、cookie（访问cookie）、applicationScope（访问application作用域）、sessionScope（访问session作用域）、requestScope（访问request作用域）、pageScope（访问page作用域）。用法如下所示：</span></p>
+<p><span style="font-family:Microsoft YaHei; font-size:14px">${pageContext.request.method}</span></p>
+<p><span style="font-family:Microsoft YaHei; font-size:14px">${pageContext[&quot;request&quot;][&quot;method&quot;]}</span></p>
+<p><span style="font-family:Microsoft YaHei; font-size:14px">${pageContext.request[&quot;method&quot;]}</span></p>
+<p><span style="font-family:Microsoft YaHei; font-size:14px">${pageContext[&quot;request&quot;].method}</span></p>
+<p><span style="font-family:Microsoft YaHei; font-size:14px">${initParam.defaultEncoding}</span></p>
+<p><span style="font-family:Microsoft YaHei; font-size:14px">${header[&quot;accept-language&quot;]}</span></p>
+<p><span style="font-family:Microsoft YaHei; font-size:14px">${headerValues[&quot;accept-language&quot;][0]}</span></p>
+<p><span style="font-family:Microsoft YaHei; font-size:14px">${cookie.jsessionid.value}</span></p>
+<p><span style="font-family:Microsoft YaHei; font-size:14px">${sessionScope.loginUser.username}</span></p>
+<p><span style="font-family:Microsoft YaHei; font-size:14px">【补充】表达式语言的.和[]运算作用是一致的，唯一的差别在于如果访问的属性名不符合Java标识符命名规则，例如上面的accept-language就不是一个有效的Java标识符，那么这时候就只能用[]运算符而不能使用.获取它的&#20540;</span></p>
+<p><br>
+</p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px"><strong>132、表达式语言（EL）支持哪些运算符？</strong></span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答：除了.和[]运算符，EL还提供了：</span></span></p>
+<p>
+<ul>
+<li><span style="font-family:Microsoft YaHei; font-size:14px">算术运算符：&#43;、-、*、/或div、%或mod</span></li><li><span style="font-family:Microsoft YaHei; font-size:14px">关系运算符：==或eq、!=或ne、&gt;或gt、&gt;=或ge、&lt;或lt、&lt;=或le</span></li><li><span style="font-family:Microsoft YaHei; font-size:14px">逻辑运算符：&amp;&amp;或and、||或or、!或not</span></li><li><span style="font-family:Microsoft YaHei; font-size:14px">条件运算符：${statement? A : B}（跟Java的条件运算符类&#20284;）</span></li><li><span style="font-family:Microsoft YaHei; font-size:14px">empty运算符：检查一个&#20540;是否为null或者空（数组长度为0或集合中没有元素也返回true）</span></li></ul>
+<p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px"><strong>133、Java Web开发的Model 1和Model 2分别指的是什么？</strong></span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答：Model 1是以页面为中心的Java Web开发，只适合非常小型的应用程序，Model 2是基于MVC架构模式的应用，这一点在前文的面试题中已经详细讲解过了。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px"><img src="26545939596978" alt=""><br>
+</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px"><img src="43195498122389" alt=""><br>
+</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px"><strong>134、Servlet 3中的异步处理指的是什么？</strong></span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答：在Servlet 3中引入了一项新的技术可以让Servlet异步处理请求。有人可能会质疑，既然都有多线程了，还需要异步处理请求吗？答案是肯定的，因为如果一个任务处理时间相当长，那么Servlet或Filter会一直占用着请求处理线程直到任务结束，随着并发用户的增加，容器将会遭遇线程超出的风险，这这种情况下很多的请求将会被堆积起来而后续的请求可能会遭遇拒绝服务，直到有资源可以处理请求为止。异步特性可以帮助应用节省容器中的线程，特别适合执行时间长而且用户需要得到结果的任务，如果用户不需要得到结果则直接将一个Runnable对象交给Executor（如果不清楚请查看前文关于多线程和线程池的部分）并立即返回即可。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">【补充】多线程在Java诞生初期无疑是一个亮点，而Servlet单实例多线程的工作方式也曾为其赢得美名，然而技术的发展往往会颠覆我们很多的认知，就如同当年爱因斯坦的相对论颠覆了牛顿的经典力学一般。事实上，异步处理绝不是Serlvet 3首创，如果你了解<a target="_blank" target="_blank" href="http://www.nodejs.org/">Node.js</a>的话，对Servlet
+ 3的这个重要改进就不以为奇了。</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">下面是一个支持异步处理请求的Servlet的例子：</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px"></span></span><pre name="code" class="java">package com.lovo.servlet;
+
+import java.io.IOException;
+
+import javax.servlet.AsyncContext;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet(urlPatterns = {&quot;/async&quot;}, asyncSupported = true)
+public class AsyncServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) 
+			throws ServletException, IOException {
+		// 开启Tomcat异步Servlet支持
+		req.setAttribute(&quot;org.apache.catalina.ASYNC_SUPPORTED&quot;, true);
+		
+		final AsyncContext ctx = req.startAsync();	// 启动异步处理的上下文
+		// ctx.setTimeout(30000);
+		ctx.start(new Runnable() {
+
+			@Override
+			public void run() {
+				// 在此处添加异步处理的代码
+			
+				ctx.complete();
+			}
+		});
+	}
+}
+</pre><br>
+<br>
+</p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px"><strong>135、如何在基于Java的Web项目中实现文件上传和下载？</strong></span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px">答：（稍后呈现，我准备用HTML5写一个带进度条的客户端，然后再用Servlet 3提供的文件上传支持来做一个多文件上传的例子）</span></span></p>
+<p><span style="font-family:Microsoft YaHei"><span style="font-size:14px"><br>
+</span></span></p>
+   
+</div><div class="ArcitleLink"><a href='http://blog.csdn.net/jackfrued/article/details/17655805'>原文链接</a>
